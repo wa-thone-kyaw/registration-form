@@ -77,5 +77,8 @@ urlpatterns = [
         views.search_by_myanname,
         name="search_by_myanname",
     ),
+    path("student_registration/register", views.register, name="register"),
+    path("student_registration/signup", views.signup, name="signup"),
+    path("student_registration/login", views.login, name="login"),
     path("admin/", admin.site.urls),
 ]

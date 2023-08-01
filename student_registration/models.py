@@ -1,5 +1,11 @@
 from django.db import models
 
+# myapp/models.py
+from django.contrib.auth.models import AbstractUser
+class CustomUser(models.Model):
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=128)
+    # Add other fields as needed
 
 class Book(models.Model):
     myanname = models.CharField(max_length=200)

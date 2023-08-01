@@ -32,6 +32,75 @@ def student_list(request):
     )
 
 
+@csrf_exempt
+def login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        # Using pymongo to find the user by username
+        client = MongoClient(
+            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+        )
+        db = client["test"]
+        collection = db["sign_up"]
+
+        user = collection.find_one({"username": username})
+
+        if user and user["password"] == password:
+            return JsonResponse({"message": "Login successful"})
+        else:
+            return JsonResponse({"error": "Invalid credentials"}, status=400)
+
+
+@csrf_exempt
+def signup(request):
+    if request.method == "POST":
+        print(request.POST)
+        username = request.POST.get("username")
+        password = request.POST.get("password")  # ID received from the React front-end
+
+        if username and password:
+            client = MongoClient(
+                "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+            )
+            db = client["test"]  # Replace <database_name> with your database name
+            collection = db["sign_up"]
+            user = {
+                "username": username,
+                "password": password,
+            }
+            collection.insert_one(user)
+            client.close()
+            return JsonResponse({"message": "User registered successfully"})
+        else:
+            return JsonResponse(
+                {"error": "Username and password are required."}, status=400
+            )
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+# views.py
+# admin sign up
+def register(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        username = data.get("username")
+        email = data.get("email")
+        google_id = data.get("googleId")
+
+        # Perform validation, e.g., check if the user already exists, validate email, etc.
+
+        # Assuming you have a PyMongo connection named "db"
+
+        user_data = {"username": username, "email": email, "googleId": google_id}
+
+        result = collection.insert_one(user_data)
+        return JsonResponse({"message": result})
+
+    return JsonResponse({"message": "Invalid request method."})
+
+
 # insert data
 def insert(request):
     client = MongoClient(
@@ -138,7 +207,7 @@ def search_by_myanname(request):
 # adding student data for first year
 @csrf_exempt
 def add_student_first_year(request):
-    if request.method == "POST":
+    if request.method == "POST" and request.FILES.get("photo"):
         data = {
             "myanname": request.POST.get("myanname"),
             "engname": request.POST.get("engname"),
@@ -166,7 +235,7 @@ def add_student_first_year(request):
             "selectedValue4": request.POST.get("selectedValue4"),
             "selectedValue5": request.POST.get("selectedValue5"),
         }
-
+        photo = request.FILES["photo"]
         print("Received data:", data)
         client = MongoClient(
             "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
@@ -174,8 +243,15 @@ def add_student_first_year(request):
 
         db = client["test"]
         collection = db["first_year"]
+        photo_data = {
+            "name": photo.name,
+            "my_photo": photo.content_type,
+            "data": base64.b64encode(photo.read()).decode("utf-8"),
+        }
 
-        result = collection.insert_one(data)
+        document = {**data, **photo_data}
+
+        result = collection.insert_one(document)
 
         print("Inserted ID:", result.inserted_id)
 
