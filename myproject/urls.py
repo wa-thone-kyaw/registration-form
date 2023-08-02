@@ -28,6 +28,26 @@ urlpatterns = [
         name="match_burmese_data",
     ),
     path(
+        "student_registration/matched_second_year_civil",
+        views.match_burmese_data_second_year,
+        name="matched_second_year",
+    ),
+    path(
+        "student_registration/matched_fourth_year",
+        views.match_burmese_data_fourth_year,
+        name="matched_fourth_year",
+    ),
+    path(
+        "student_registration/matched_fifth_year",
+        views.match_burmese_data_fifth_year,
+        name="matched_fifth_year",
+    ),
+    path(
+        "student_registration/matched_sixth_year",
+        views.match_burmese_data_sixth_year,
+        name="matched_sixth_year",
+    ),
+    path(
         "student_registration/delete_document/<str:doc_id>/",
         views.delete_document,
         name="delete_document",
@@ -58,14 +78,14 @@ urlpatterns = [
         name="final_year",
     ),
     path(
+        "student_registration/first_civil",
+        views.add_student_first_civil_admin,
+        name="first_civil",
+    ),
+    path(
         "student_registration/first_year",
         views.add_student_first_year,
         name="first_year",
-    ),
-    path(
-        "student_registration/admin_add_student_secondyear_IT/",
-        views.admin_add_student_secondyear_IT,
-        name="admin_add_student_secondyear_IT",
     ),
     path(
         "student_registration/photo_upload_view",
@@ -86,24 +106,9 @@ urlpatterns = [
         name="update_student",
     ),
     path(
-        "student_registration/matched_second_year",
-        views.match_burmese_data_second_year,
-        name="matched_second_year",
-    ),
-    path(
-        "student_registration/matched_fourth_year",
-        views.match_burmese_data_fourth_year,
-        name="matched_fourth_year",
-    ),
-    path(
-        "student_registration/matched_fifth_year",
-        views.match_burmese_data_fifth_year,
-        name="matched_fifth_year",
-    ),
-    path(
-        "student_registration/matched_sixth_year",
-        views.match_burmese_data_sixth_year,
-        name="matched_sixth_year",
+        "student_registration/first_civil_list",
+        views.student_list_first_civil,
+        name="first_civil_list",
     ),
     path(
         "student_registration/third_civil_list",
