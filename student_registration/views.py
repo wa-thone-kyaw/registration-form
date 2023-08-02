@@ -10,17 +10,18 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from io import BytesIO
+from pymongo.errors import PyMongoError
+
 
 # Create your views here.
-
-
 # show student list
+# civil
 def student_list(request):
     client = MongoClient(
         "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
     )
     db = client["test"]  # Replace <database_name> with your database name
-    collection = db["test_db"]
+    collection = db["adm2nd"]
 
     students = list(collection.find())
     serialized_students = []
@@ -30,6 +31,359 @@ def student_list(request):
     return JsonResponse(
         {"students": serialized_students}, json_dumps_params={"default": str}
     )
+
+
+# adding student data for second year
+# civil
+@csrf_exempt
+def add_student_second_year(request):
+    if request.method == "POST":
+        data = {
+            "myanname": request.POST.get("myanname"),
+            "engname": request.POST.get("engname"),
+            "nrc": request.POST.get("nrc"),
+            "birthDay": request.POST.get("birthDay"),
+            "nation": request.POST.get("nation"),
+            "rollno": request.POST.get("rollno"),
+            "score": request.POST.get("score"),
+            "passedseat_no": request.POST.get("passedseat_no"),
+            "currentseat_no": request.POST.get("currentseat_no"),
+            "myanfathername": request.POST.get("myanfathername"),
+            "engfathername": request.POST.get("engfathername"),
+            "fathernrc": request.POST.get("fathernrc"),
+            "fathernation": request.POST.get("fathernation"),
+            "fatherjob": request.POST.get("fatherjob"),
+            "mothername": request.POST.get("mothername"),
+            "mothernrc": request.POST.get("mothernrc"),
+            "mothernation": request.POST.get("mothernation"),
+            "motherjob": request.POST.get("motherjob"),
+            "address": request.POST.get("address"),
+            "phone_no": request.POST.get("phone_no"),
+            "student_no": request.POST.get("student_no"),
+            "email": request.POST.get("email"),
+        }
+        """ photo = request.FILES["photo"] """
+        print("Received data:", data)
+        client = MongoClient(
+            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority",
+            connectTimeoutMS=30000,
+        )
+
+        db = client["test"]
+        collection = db["adm2nd"]
+        """ photo_data = {
+            "name": photo.name,
+            "my_photo": photo.content_type,
+            "data": base64.b64encode(photo.read()).decode("utf-8"),
+        } """
+
+        """ document = {**data, **photo_data} """
+        result = collection.insert_one(data)
+        print("Inserted ID:", result.inserted_id)
+        print("inserted document", result)
+
+        # Return the inserted document I
+        return JsonResponse({"id": str(result.inserted_id)})
+
+    return JsonResponse({"message": "Method not allowed"}, status=405)
+
+
+# show student list
+# civil
+@csrf_exempt
+def student_list_third_civil(request):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]
+    collection = db["third_civil"]
+
+    students = list(collection.find())
+    serialized_students = []
+    for student in students:
+        student["_id"] = str(student["_id"])
+        serialized_students.append(student)
+    return JsonResponse(
+        {"students": serialized_students}, json_dumps_params={"default": str}
+    )
+
+
+# civil
+@csrf_exempt
+def add_student_third_year(request):
+    if request.method == "POST":
+        data = {
+            "myanname": request.POST.get("myanname"),
+            "engname": request.POST.get("engname"),
+            "nrc": request.POST.get("nrc"),
+            "birthDay": request.POST.get("birthDay"),
+            "nation": request.POST.get("nation"),
+            "rollno": request.POST.get("rollno"),
+            "score": request.POST.get("score"),
+            "passedseat_no": request.POST.get("passedseat_no"),
+            "currentseat_no": request.POST.get("currentseat_no"),
+            "myanfathername": request.POST.get("myanfathername"),
+            "engfathername": request.POST.get("engfathername"),
+            "fathernrc": request.POST.get("fathernrc"),
+            "fathernation": request.POST.get("fathernation"),
+            "fatherjob": request.POST.get("fatherjob"),
+            "mothername": request.POST.get("mothername"),
+            "mothernrc": request.POST.get("mothernrc"),
+            "mothernation": request.POST.get("mothernation"),
+            "motherjob": request.POST.get("motherjob"),
+            "address": request.POST.get("address"),
+            "phone_no": request.POST.get("phone_no"),
+            "student_no": request.POST.get("student_no"),
+            "email": request.POST.get("email"),
+        }
+        """ photo = request.FILES["photo"] """
+        print("Received data:", data)
+        client = MongoClient(
+            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/t?retryWrites=true&w=majority"
+        )
+
+        db = client["test"]
+        collection = db["third_civil"]
+
+        """ photo_data = {
+            "name": photo.name,
+            "my_photo": photo.content_type,
+            "data": base64.b64encode(photo.read()).decode("utf-8"),
+        } """
+        """ document = {**data, **photo_data} """
+
+        ## Convert photo to base64 before storing it in MongoDB
+
+        # Insert the document into the collection
+
+        result = collection.insert_one(data)
+        print("Inserted ID:", result.inserted_id)
+
+        # Return the inserted document ID
+        return JsonResponse({"id": str(result.inserted_id)})
+
+    return JsonResponse({"message": "Method not allowed"}, status=405)
+
+
+# civil
+@csrf_exempt
+def student_list_fourth_civil(request):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]  # Replace <database_name> with your database name
+    collection = db["fourth_civil"]
+
+    students = list(collection.find())
+    serialized_students = []
+    for student in students:
+        student["_id"] = str(student["_id"])
+        serialized_students.append(student)
+    return JsonResponse(
+        {"students": serialized_students}, json_dumps_params={"default": str}
+    )
+
+
+# civil
+@csrf_exempt
+def add_student_fourth_year(request):
+    if request.method == "POST":
+        data = {
+            "myanname": request.POST.get("myanname"),
+            "engname": request.POST.get("engname"),
+            "nrc": request.POST.get("nrc"),
+            "birthDay": request.POST.get("birthDay"),
+            "nation": request.POST.get("nation"),
+            "rollno": request.POST.get("rollno"),
+            "score": request.POST.get("score"),
+            "passedseat_no": request.POST.get("passedseat_no"),
+            "currentseat_no": request.POST.get("currentseat_no"),
+            "myanfathername": request.POST.get("myanfathername"),
+            "engfathername": request.POST.get("engfathername"),
+            "fathernrc": request.POST.get("fathernrc"),
+            "fathernation": request.POST.get("fathernation"),
+            "fatherjob": request.POST.get("fatherjob"),
+            "mothername": request.POST.get("mothername"),
+            "mothernrc": request.POST.get("mothernrc"),
+            "mothernation": request.POST.get("mothernation"),
+            "motherjob": request.POST.get("motherjob"),
+            "address": request.POST.get("address"),
+            "phone_no": request.POST.get("phone_no"),
+            "student_no": request.POST.get("student_no"),
+            "email": request.POST.get("email"),
+        }
+        """ photo = request.FILES["photo"] """
+        print("Received data:", data)
+        client = MongoClient(
+            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+        )
+
+        db = client["test"]
+        collection = db["fourth_civil"]
+
+        """ photo_data = {
+            "name": photo.name,
+            "my_photo": photo.content_type,
+            "data": base64.b64encode(photo.read()).decode("utf-8"),
+        } """
+
+        """ document = {**data, **photo_data} """
+
+        result = collection.insert_one(data)
+        print("Inserted ID:", result.inserted_id)
+
+        # Return the inserted document ID
+        return JsonResponse({"id": str(result.inserted_id)})
+
+    return JsonResponse({"message": "Method not allowed"}, status=405)
+
+
+# civil
+@csrf_exempt
+def student_list_fifth_civil(request):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]  # Replace <database_name> with your database name
+    collection = db["5civil"]
+
+    students = list(collection.find())
+    serialized_students = []
+    for student in students:
+        student["_id"] = str(student["_id"])
+        serialized_students.append(student)
+    return JsonResponse(
+        {"students": serialized_students}, json_dumps_params={"default": str}
+    )
+
+
+# civil
+@csrf_exempt
+def add_student_fifth_year(request):
+    if request.method == "POST":
+        data = {
+            "myanname": request.POST.get("myanname"),
+            "engname": request.POST.get("engname"),
+            "nrc": request.POST.get("nrc"),
+            "birthDay": request.POST.get("birthDay"),
+            "nation": request.POST.get("nation"),
+            "rollno": request.POST.get("rollno"),
+            "score": request.POST.get("score"),
+            "passedseat_no": request.POST.get("passedseat_no"),
+            "currentseat_no": request.POST.get("currentseat_no"),
+            "myanfathername": request.POST.get("myanfathername"),
+            "engfathername": request.POST.get("engfathername"),
+            "fathernrc": request.POST.get("fathernrc"),
+            "fathernation": request.POST.get("fathernation"),
+            "fatherjob": request.POST.get("fatherjob"),
+            "mothername": request.POST.get("mothername"),
+            "mothernrc": request.POST.get("mothernrc"),
+            "mothernation": request.POST.get("mothernation"),
+            "motherjob": request.POST.get("motherjob"),
+            "address": request.POST.get("address"),
+            "phone_no": request.POST.get("phone_no"),
+            "student_no": request.POST.get("student_no"),
+            "email": request.POST.get("email"),
+        }
+        """ photo = request.FILES["photo"] """
+        print("Received data:", data)
+        client = MongoClient(
+            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+        )
+
+        db = client["test"]
+        collection = db["5civil"]
+
+        """ photo_data = {
+            "name": photo.name,
+            "my_photo": photo.content_type,
+            "data": base64.b64encode(photo.read()).decode("utf-8"),
+        } """
+
+        """ document = {**data, **photo_data} """
+
+        result = collection.insert_one(data)
+        print("Inserted ID:", result.inserted_id)
+
+        # Return the inserted document ID
+        return JsonResponse({"id": str(result.inserted_id)})
+
+    return JsonResponse({"message": "Method not allowed"}, status=405)
+
+
+# civil
+@csrf_exempt
+def student_list_sixth_civil(request):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]  # Replace <database_name> with your database name
+    collection = db["6civil"]
+
+    students = list(collection.find())
+    serialized_students = []
+    for student in students:
+        student["_id"] = str(student["_id"])
+        serialized_students.append(student)
+    return JsonResponse(
+        {"students": serialized_students}, json_dumps_params={"default": str}
+    )
+
+
+# final year adding data
+@csrf_exempt
+def add_student_final_year(request):
+    if request.method == "POST":
+        data = {
+            "myanname": request.POST.get("myanname"),
+            "engname": request.POST.get("engname"),
+            "nrc": request.POST.get("nrc"),
+            "birthDay": request.POST.get("birthDay"),
+            "nation": request.POST.get("nation"),
+            "rollno": request.POST.get("rollno"),
+            "score": request.POST.get("score"),
+            "passedseat_no": request.POST.get("passedseat_no"),
+            "currentseat_no": request.POST.get("currentseat_no"),
+            "myanfathername": request.POST.get("myanfathername"),
+            "engfathername": request.POST.get("engfathername"),
+            "fathernrc": request.POST.get("fathernrc"),
+            "fathernation": request.POST.get("fathernation"),
+            "fatherjob": request.POST.get("fatherjob"),
+            "mothername": request.POST.get("mothername"),
+            "mothernrc": request.POST.get("mothernrc"),
+            "mothernation": request.POST.get("mothernation"),
+            "motherjob": request.POST.get("motherjob"),
+            "address": request.POST.get("address"),
+            "phone_no": request.POST.get("phone_no"),
+            "student_no": request.POST.get("student_no"),
+            "email": request.POST.get("email"),
+        }
+        """ photo = request.FILES["photo"] """
+        print("Received data:", data)
+        client = MongoClient(
+            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+        )
+
+        db = client["test"]
+        collection = db["6civil"]
+
+        """ photo_data = {
+            "name": photo.name,
+            "my_photo": photo.content_type,
+            "data": base64.b64encode(photo.read()).decode("utf-8"),
+        } """
+
+        """ document = {**data, **photo_data} """
+        result = collection.insert_one(data)
+        """ result = collection.insert_one(photo_data) """
+
+        """ result = collection.insert_one(document) """
+        print("Inserted ID:", result.inserted_id)
+
+        # Return the inserted document ID
+        return JsonResponse({"id": str(result.inserted_id)})
+
+    return JsonResponse({"message": "Method not allowed"}, status=405)
 
 
 @csrf_exempt
@@ -48,7 +402,9 @@ def login(request):
         user = collection.find_one({"username": username})
 
         if user and user["password"] == password:
-            return JsonResponse({"message": "Login successful"})
+            return JsonResponse(
+                {"username": user[username], "token": "your_generated_token"}
+            )
         else:
             return JsonResponse({"error": "Invalid credentials"}, status=400)
 
@@ -88,10 +444,6 @@ def register(request):
         username = data.get("username")
         email = data.get("email")
         google_id = data.get("googleId")
-
-        # Perform validation, e.g., check if the user already exists, validate email, etc.
-
-        # Assuming you have a PyMongo connection named "db"
 
         user_data = {"username": username, "email": email, "googleId": google_id}
 
@@ -243,6 +595,7 @@ def add_student_first_year(request):
 
         db = client["test"]
         collection = db["first_year"]
+
         photo_data = {
             "name": photo.name,
             "my_photo": photo.content_type,
@@ -261,249 +614,96 @@ def add_student_first_year(request):
     return JsonResponse({"message": "Method not allowed"}, status=405)
 
 
-# adding student data for second year
 @csrf_exempt
-def add_student_second_year(request):
-    if request.method == "POST" and request.FILES.get("photo"):
-        data = {
-            "myanname": request.POST.get("myanname"),
-            "engname": request.POST.get("engname"),
-            "nrc": request.POST.get("nrc"),
-            "birthDay": request.POST.get("birthDay"),
-            "nation": request.POST.get("nation"),
-            "seatno": request.POST.get("seatno"),
-            "score": request.POST.get("score"),
-            "passedseat_no": request.POST.get("passedseat_no"),
-            "currentseat_no": request.POST.get("currentseat_no"),
-            "myanfathername": request.POST.get("myanfathername"),
-            "engfathername": request.POST.get("engfathername"),
-            "fathernrc": request.POST.get("fathernrc"),
-            "fathernation": request.POST.get("fathernation"),
-            "fatherjob": request.POST.get("fatherjob"),
-            "mothername": request.POST.get("mothername"),
-            "mothernrc": request.POST.get("mothernrc"),
-            "mothernation": request.POST.get("mothernation"),
-            "motherjob": request.POST.get("motherjob"),
-            "address": request.POST.get("address"),
-            "phone_no": request.POST.get("phone_no"),
-            "student_no": request.POST.get("student_no"),
-            "email": request.POST.get("email"),
-        }
-        photo = request.FILES["photo"]
-        print("Received data:", data)
-        client = MongoClient(
-            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority",
-            connectTimeoutMS=30000,
-        )
+def update_student_admin_second_year(request, student_id):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
 
-        db = client["test"]
-        collection = db["test_db"]
-        photo_data = {
-            "name": photo.name,
-            "my_photo": photo.content_type,
-            "data": base64.b64encode(photo.read()).decode("utf-8"),
-        }
+    db = client["test"]
+    collection = db["adm2nd"]  # Replace with the name of your collection
 
-        document = {**data, **photo_data}
+    if request.method == "PUT":
+        try:
+            # Extract the updated data from the request
+            myanname = request.POST.get("myanname")
+            engname = request.POST.get("engname")
+            nrc = request.POST.get("nrc")
+            birthDay = request.POST.get("birthDay")
+            nation = request.POST.get("nation")
+            rollno = request.POST.get("rollno")
+            score = request.POST.get("score")
+            passedseat_no = request.POST.get("passedseat_no")
+            currentseat_no = request.POST.get("currentseat_no")
+            myanfathername = request.POST.get("myanfathername")
+            engfathername = request.POST.get("engfathername")
+            fathernrc = request.POST.get("fathernrc")
+            fathernation = request.POST.get("fathernation")
+            fatherjob = request.POST.get("fatherjob")
+            mothername = request.POST.get("mothername")
+            mothernrc = request.POST.get("mothernrc")
+            mothernation = request.POST.get("mothernation")
+            motherjob = request.POST.get("motherjob")
+            address = request.POST.get("address")
+            phone_no = request.POST.get("phone_no")
+            student_no = request.POST.get("student_no")
+            email = request.POST.get("email")
 
-        ## Convert photo to base64 before storing it in MongoDB
+            # Perform the update in the database
+            collection.update_one(
+                {"_id": student_id},
+                {
+                    "$set": {
+                        "myanname": myanname,
+                        "engname": engname,
+                        "nrc": nrc,
+                        "birthDay": birthDay,
+                        "nation": nation,
+                        "rollno": rollno,
+                        "score": score,
+                        "passedseat_no": passedseat_no,
+                        "currentseat_no": currentseat_no,
+                        "myanfathername": myanfathername,
+                        "engfathername": engfathername,
+                        "fathernrc": fathernrc,
+                        "fathernation": fathernation,
+                        "fatherjob": fatherjob,
+                        "mothername": mothername,
+                        "mothernrc": mothernrc,
+                        "mothernation": mothernation,
+                        "motherjob": motherjob,
+                        "address": address,
+                        "phone_no": phone_no,
+                        "student_no": student_no,
+                        "email": email,
+                    }
+                },
+            )
 
-        # Insert the document into the collection
+            # Return a success response
+            return JsonResponse({"message": "Student data updated successfully"})
 
-        result = collection.insert_one(document)
-        print("Inserted ID:", result.inserted_id)
-        print("inserted document", result)
-
-        # Return the inserted document ID
-        return JsonResponse({"id": str(result.inserted_id)})
-
-    return JsonResponse({"message": "Method not allowed"}, status=405)
-
-
-# Third year
-@csrf_exempt
-def add_student_third_year(request):
-    if request.method == "POST" and request.FILES.get("photo"):
-        data = {
-            "myanname": request.POST.get("myanname"),
-            "engname": request.POST.get("engname"),
-            "nrc": request.POST.get("nrc"),
-            "birthDay": request.POST.get("birthDay"),
-            "nation": request.POST.get("nation"),
-            "seatno": request.POST.get("seatno"),
-            "score": request.POST.get("score"),
-            "passedseat_no": request.POST.get("passedseat_no"),
-            "currentseat_no": request.POST.get("currentseat_no"),
-            "myanfathername": request.POST.get("myanfathername"),
-            "engfathername": request.POST.get("engfathername"),
-            "fathernrc": request.POST.get("fathernrc"),
-            "fathernation": request.POST.get("fathernation"),
-            "fatherjob": request.POST.get("fatherjob"),
-            "mothername": request.POST.get("mothername"),
-            "mothernrc": request.POST.get("mothernrc"),
-            "mothernation": request.POST.get("mothernation"),
-            "motherjob": request.POST.get("motherjob"),
-            "address": request.POST.get("address"),
-            "phone_no": request.POST.get("phone_no"),
-            "student_no": request.POST.get("student_no"),
-            "email": request.POST.get("email"),
-        }
-        photo = request.FILES["photo"]
-        print("Received data:", data)
-        client = MongoClient(
-            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/t?retryWrites=true&w=majority"
-        )
-
-        db = client["test"]
-        collection = db["third_year"]
-
-        photo_data = {
-            "name": photo.name,
-            "my_photo": photo.content_type,
-            "data": base64.b64encode(photo.read()).decode("utf-8"),
-        }
-        document = {**data, **photo_data}
-
-        ## Convert photo to base64 before storing it in MongoDB
-
-        # Insert the document into the collection
-
-        result = collection.insert_one(document)
-        print("Inserted ID:", result.inserted_id)
-
-        # Return the inserted document ID
-        return JsonResponse({"id": str(result.inserted_id)})
+        except Exception as e:
+            print("Error occurred during update:", str(e))
+            return JsonResponse({"error": "Error occurred during update"}, status=500)
 
     return JsonResponse({"message": "Method not allowed"}, status=405)
 
 
 # fourth year adding data
-@csrf_exempt
-def add_student_fourth_year(request):
-    if request.method == "POST" and request.FILES.get("photo"):
-        data = {
-            "myanname": request.POST.get("myanname"),
-            "engname": request.POST.get("engname"),
-            "nrc": request.POST.get("nrc"),
-            "birthDay": request.POST.get("birthDay"),
-            "nation": request.POST.get("nation"),
-            "seatno": request.POST.get("seatno"),
-            "score": request.POST.get("score"),
-            "passedseat_no": request.POST.get("passedseat_no"),
-            "currentseat_no": request.POST.get("currentseat_no"),
-            "myanfathername": request.POST.get("myanfathername"),
-            "engfathername": request.POST.get("engfathername"),
-            "fathernrc": request.POST.get("fathernrc"),
-            "fathernation": request.POST.get("fathernation"),
-            "fatherjob": request.POST.get("fatherjob"),
-            "mothername": request.POST.get("mothername"),
-            "mothernrc": request.POST.get("mothernrc"),
-            "mothernation": request.POST.get("mothernation"),
-            "motherjob": request.POST.get("motherjob"),
-            "address": request.POST.get("address"),
-            "phone_no": request.POST.get("phone_no"),
-            "student_no": request.POST.get("student_no"),
-            "email": request.POST.get("email"),
-        }
-        photo = request.FILES["photo"]
-        print("Received data:", data)
-        client = MongoClient(
-            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
-        )
-
-        db = client["test"]
-        collection = db["fourth_year"]
-
-        photo_data = {
-            "name": photo.name,
-            "my_photo": photo.content_type,
-            "data": base64.b64encode(photo.read()).decode("utf-8"),
-        }
-
-        document = {**data, **photo_data}
-
-        ## Convert photo to base64 before storing it in MongoDB
-
-        # Insert the document into the collection
-
-        result = collection.insert_one(document)
-        print("Inserted ID:", result.inserted_id)
-
-        # Return the inserted document ID
-        return JsonResponse({"id": str(result.inserted_id)})
-
-    return JsonResponse({"message": "Method not allowed"}, status=405)
-
-
-# fifth year adding data
-@csrf_exempt
-def add_student_fifth_year(request):
-    if request.method == "POST" and request.FILES.get("photo"):
-        data = {
-            "myanname": request.POST.get("myanname"),
-            "engname": request.POST.get("engname"),
-            "nrc": request.POST.get("nrc"),
-            "birthDay": request.POST.get("birthDay"),
-            "nation": request.POST.get("nation"),
-            "seatno": request.POST.get("seatno"),
-            "score": request.POST.get("score"),
-            "passedseat_no": request.POST.get("passedseat_no"),
-            "currentseat_no": request.POST.get("currentseat_no"),
-            "myanfathername": request.POST.get("myanfathername"),
-            "engfathername": request.POST.get("engfathername"),
-            "fathernrc": request.POST.get("fathernrc"),
-            "fathernation": request.POST.get("fathernation"),
-            "fatherjob": request.POST.get("fatherjob"),
-            "mothername": request.POST.get("mothername"),
-            "mothernrc": request.POST.get("mothernrc"),
-            "mothernation": request.POST.get("mothernation"),
-            "motherjob": request.POST.get("motherjob"),
-            "address": request.POST.get("address"),
-            "phone_no": request.POST.get("phone_no"),
-            "student_no": request.POST.get("student_no"),
-            "email": request.POST.get("email"),
-        }
-        photo = request.FILES["photo"]
-        print("Received data:", data)
-        client = MongoClient(
-            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
-        )
-
-        db = client["test"]
-        collection = db["fifth_year"]
-
-        photo_data = {
-            "name": photo.name,
-            "my_photo": photo.content_type,
-            "data": base64.b64encode(photo.read()).decode("utf-8"),
-        }
-
-        document = {**data, **photo_data}
-
-        ## Convert photo to base64 before storing it in MongoDB
-
-        # Insert the document into the collection
-
-        result = collection.insert_one(document)
-        print("Inserted ID:", result.inserted_id)
-
-        # Return the inserted document ID
-        return JsonResponse({"id": str(result.inserted_id)})
-
-    return JsonResponse({"message": "Method not allowed"}, status=405)
 
 
 # final year adding data
 @csrf_exempt
 def add_student_final_year(request):
-    if request.method == "POST" and request.FILES.get("photo"):
+    if request.method == "POST":
         data = {
             "myanname": request.POST.get("myanname"),
             "engname": request.POST.get("engname"),
             "nrc": request.POST.get("nrc"),
             "birthDay": request.POST.get("birthDay"),
             "nation": request.POST.get("nation"),
-            "seatno": request.POST.get("seatno"),
+            "rollno": request.POST.get("rollno"),
             "score": request.POST.get("score"),
             "passedseat_no": request.POST.get("passedseat_no"),
             "currentseat_no": request.POST.get("currentseat_no"),
@@ -521,7 +721,7 @@ def add_student_final_year(request):
             "student_no": request.POST.get("student_no"),
             "email": request.POST.get("email"),
         }
-        photo = request.FILES["photo"]
+        """ photo = request.FILES["photo"] """
         print("Received data:", data)
         client = MongoClient(
             "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
@@ -530,15 +730,15 @@ def add_student_final_year(request):
         db = client["test"]
         collection = db["final_year"]
 
-        photo_data = {
+        """ photo_data = {
             "name": photo.name,
             "my_photo": photo.content_type,
             "data": base64.b64encode(photo.read()).decode("utf-8"),
-        }
+        } """
 
         """ document = {**data, **photo_data} """
         result = collection.insert_one(data)
-        result = collection.insert_one(photo_data)
+        """ result = collection.insert_one(photo_data) """
 
         ## Convert photo to base64 before storing it in MongoDB
 
@@ -573,64 +773,292 @@ def delete_document(request, doc_id):
 # this is for matching student data then add student data
 @csrf_exempt
 def match_burmese_data(request):
-    # Get the user-posted Burmese data from the request
-
-    # Connect to MongoDB Atlas
     client = MongoClient(
         "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
     )
     db = client["test"]
     collection = db["fourth_year"]
+    collection2 = db["adm2nd"]
 
-    b = request.POST.get("myanname", None)
-    matched_doc = collection.find_one({"myanname": b})
-
+    b = request.POST.get("rollno", None)
+    print("Seatno", b)
+    matched_doc = collection2.find_one({"rollno": b})
+    print(matched_doc)
+    new_doc = {}
     if matched_doc:
         photo = request.FILES.get("photo")
         if photo:
-            # Convert the photo data to a base64 encoded string
             photo_data = {
                 "name": photo.name,
                 "my_photo": photo.content_type,
                 "data": base64.b64encode(photo.read()).decode("utf-8"),
             }
-            matched_doc["photo"] = photo_data
-        matched_doc["engname"] = request.POST.get("nameEng")
-        matched_doc["nrc"] = request.POST.get("NRC")
-        matched_doc["birthDay"] = request.POST.get("birthDay")
-        matched_doc["nation"] = request.POST.get("nation")
-        matched_doc["seatno"] = request.POST.get("seatno")
-        matched_doc["score"] = request.POST.get("score")
-        matched_doc["passedseat_no"] = request.POST.get("passedseat_no")
-        matched_doc["currentseat_no"] = request.POST.get("currentseat_no")
-        matched_doc["myanfathername"] = request.POST.get("myanfathername")
-        matched_doc["engfathername"] = request.POST.get("fatherNameEng")
-        matched_doc["fathernrc"] = request.POST.get("fathernrc")
-        matched_doc["fathernation"] = request.POST.get("fathernation")
-        matched_doc["fatherjob"] = request.POST.get("fatherjob")
-        matched_doc["mothername"] = request.POST.get("mothername")
-        matched_doc["mothernrc"] = request.POST.get("mothernrc")
-        matched_doc["mothernation"] = request.POST.get("mothernation")
-        matched_doc["motherjob"] = request.POST.get("motherjob")
-        matched_doc["address"] = request.POST.get("address")
-        matched_doc["student_no"] = request.POST.get("student_no")
-        matched_doc["phone_no"] = request.POST.get("phone_no")
-        matched_doc["email"] = request.POST.get("email")
 
-        print("Matched data:", matched_doc["_id"])
-        # Create a text index on the relevant fields
-        collection.replace_one({"_id": matched_doc["_id"]}, matched_doc)
-        print(
-            "Matched data:", matched_doc["_id"]
-        )  # Replace field_name_1, field_name_2 with actual field names
+            new_doc["photo"] = photo_data
+        new_doc["myanamme"] = request.POST.get("myanname")
+        new_doc["engname"] = request.POST.get("engname")
+        new_doc["nrc"] = request.POST.get("nrc")
+        new_doc["birthDay"] = request.POST.get("birthDay")
+        new_doc["nation"] = request.POST.get("nation")
+        new_doc["rollno"] = request.POST.get("rollno")
+        new_doc["score"] = request.POST.get("score")
+        new_doc["passedseat_no"] = request.POST.get("passedseat_no")
+        new_doc["currentseat_no"] = request.POST.get("currentseat_no")
+        new_doc["myanfathername"] = request.POST.get("myanfathername")
+        new_doc["engfathername"] = request.POST.get("fatherNameEng")
+        new_doc["fathernrc"] = request.POST.get("fathernrc")
+        new_doc["fathernation"] = request.POST.get("fathernation")
+        new_doc["fatherjob"] = request.POST.get("fatherjob")
+        new_doc["mothername"] = request.POST.get("mothername")
+        new_doc["mothernrc"] = request.POST.get("mothernrc")
+        new_doc["mothernation"] = request.POST.get("mothernation")
+        new_doc["motherjob"] = request.POST.get("motherjob")
+        new_doc["address"] = request.POST.get("address")
+        new_doc["student_no"] = request.POST.get("student_no")
+        new_doc["phone_no"] = request.POST.get("phone_no")
+        new_doc["email"] = request.POST.get("email")
 
-        # Process or return the matching documents as needed
-        return JsonResponse({"message": "Data updated successfully"})
+        try:
+            collection.insert_one(new_doc)
+            print("Error inerting data:", str(e))
+            return JsonResponse({"message": "Data updated successfully"})
+        except Exception as e:
+            print("Inserted data:", new_doc["_id"])
+            return JsonResponse({"message": "No matching document found"})
     else:
-        # No matching document found, return an error response
-        return JsonResponse({"message": "No matching document found"})
+        return JsonResponse({"message": "No matching document found "})
 
-    return JsonResponse({"message": "No matching document found"})
+
+@csrf_exempt
+def match_burmese_data_second_year(request):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]
+    collection = db["fourth_year"]
+    collection2 = db["adm2nd"]
+
+    b = request.POST.get("rollno", None)
+    print("Seatno", b)
+    matched_doc = collection2.find_one({"rollno": b})
+    print(matched_doc)
+    new_doc = {}
+    if matched_doc:
+        photo = request.FILES.get("photo")
+        if photo:
+            photo_data = {
+                "name": photo.name,
+                "my_photo": photo.content_type,
+                "data": base64.b64encode(photo.read()).decode("utf-8"),
+            }
+
+            new_doc["photo"] = photo_data
+        new_doc["myanamme"] = request.POST.get("myanname")
+        new_doc["engname"] = request.POST.get("engname")
+        new_doc["nrc"] = request.POST.get("nrc")
+        new_doc["birthDay"] = request.POST.get("birthDay")
+        new_doc["nation"] = request.POST.get("nation")
+        new_doc["rollno"] = request.POST.get("rollno")
+        new_doc["score"] = request.POST.get("score")
+        new_doc["passedseat_no"] = request.POST.get("passedseat_no")
+        new_doc["currentseat_no"] = request.POST.get("currentseat_no")
+        new_doc["myanfathername"] = request.POST.get("myanfathername")
+        new_doc["engfathername"] = request.POST.get("fatherNameEng")
+        new_doc["fathernrc"] = request.POST.get("fathernrc")
+        new_doc["fathernation"] = request.POST.get("fathernation")
+        new_doc["fatherjob"] = request.POST.get("fatherjob")
+        new_doc["mothername"] = request.POST.get("mothername")
+        new_doc["mothernrc"] = request.POST.get("mothernrc")
+        new_doc["mothernation"] = request.POST.get("mothernation")
+        new_doc["motherjob"] = request.POST.get("motherjob")
+        new_doc["address"] = request.POST.get("address")
+        new_doc["student_no"] = request.POST.get("student_no")
+        new_doc["phone_no"] = request.POST.get("phone_no")
+        new_doc["email"] = request.POST.get("email")
+
+        try:
+            collection.insert_one(new_doc)
+            print("Error inerting data:", str(e))
+            return JsonResponse({"message": "Data updated successfully"})
+        except Exception as e:
+            print("Inserted data:", new_doc["_id"])
+            return JsonResponse({"message": "No matching document found"})
+    else:
+        return JsonResponse({"message": "No matching document found "})
+
+
+@csrf_exempt
+def match_burmese_data_fifth_year(request):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]
+    collection = db["fourth_year"]
+    collection2 = db["adm2nd"]
+
+    b = request.POST.get("rollno", None)
+    print("Seatno", b)
+    matched_doc = collection2.find_one({"rollno": b})
+    print(matched_doc)
+    new_doc = {}
+    if matched_doc:
+        photo = request.FILES.get("photo")
+        if photo:
+            photo_data = {
+                "name": photo.name,
+                "my_photo": photo.content_type,
+                "data": base64.b64encode(photo.read()).decode("utf-8"),
+            }
+
+            new_doc["photo"] = photo_data
+        new_doc["myanamme"] = request.POST.get("myanname")
+        new_doc["engname"] = request.POST.get("engname")
+        new_doc["nrc"] = request.POST.get("nrc")
+        new_doc["birthDay"] = request.POST.get("birthDay")
+        new_doc["nation"] = request.POST.get("nation")
+        new_doc["rollno"] = request.POST.get("rollno")
+        new_doc["score"] = request.POST.get("score")
+        new_doc["passedseat_no"] = request.POST.get("passedseat_no")
+        new_doc["currentseat_no"] = request.POST.get("currentseat_no")
+        new_doc["myanfathername"] = request.POST.get("myanfathername")
+        new_doc["engfathername"] = request.POST.get("fatherNameEng")
+        new_doc["fathernrc"] = request.POST.get("fathernrc")
+        new_doc["fathernation"] = request.POST.get("fathernation")
+        new_doc["fatherjob"] = request.POST.get("fatherjob")
+        new_doc["mothername"] = request.POST.get("mothername")
+        new_doc["mothernrc"] = request.POST.get("mothernrc")
+        new_doc["mothernation"] = request.POST.get("mothernation")
+        new_doc["motherjob"] = request.POST.get("motherjob")
+        new_doc["address"] = request.POST.get("address")
+        new_doc["student_no"] = request.POST.get("student_no")
+        new_doc["phone_no"] = request.POST.get("phone_no")
+        new_doc["email"] = request.POST.get("email")
+
+        try:
+            collection.insert_one(new_doc)
+            print("Error inerting data:", str(e))
+            return JsonResponse({"message": "Data updated successfully"})
+        except Exception as e:
+            print("Inserted data:", new_doc["_id"])
+            return JsonResponse({"message": "No matching document found"})
+    else:
+        return JsonResponse({"message": "No matching document found "})
+
+
+@csrf_exempt
+def match_burmese_data_fourth_year(request):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]
+    collection = db["fourth_year"]
+    collection2 = db["adm2nd"]
+
+    b = request.POST.get("rollno", None)
+    print("Seatno", b)
+    matched_doc = collection2.find_one({"rollno": b})
+    print(matched_doc)
+    new_doc = {}
+    if matched_doc:
+        photo = request.FILES.get("photo")
+        if photo:
+            photo_data = {
+                "name": photo.name,
+                "my_photo": photo.content_type,
+                "data": base64.b64encode(photo.read()).decode("utf-8"),
+            }
+
+            new_doc["photo"] = photo_data
+        new_doc["myanamme"] = request.POST.get("myanname")
+        new_doc["engname"] = request.POST.get("engname")
+        new_doc["nrc"] = request.POST.get("nrc")
+        new_doc["birthDay"] = request.POST.get("birthDay")
+        new_doc["nation"] = request.POST.get("nation")
+        new_doc["rollno"] = request.POST.get("rollno")
+        new_doc["score"] = request.POST.get("score")
+        new_doc["passedseat_no"] = request.POST.get("passedseat_no")
+        new_doc["currentseat_no"] = request.POST.get("currentseat_no")
+        new_doc["myanfathername"] = request.POST.get("myanfathername")
+        new_doc["engfathername"] = request.POST.get("fatherNameEng")
+        new_doc["fathernrc"] = request.POST.get("fathernrc")
+        new_doc["fathernation"] = request.POST.get("fathernation")
+        new_doc["fatherjob"] = request.POST.get("fatherjob")
+        new_doc["mothername"] = request.POST.get("mothername")
+        new_doc["mothernrc"] = request.POST.get("mothernrc")
+        new_doc["mothernation"] = request.POST.get("mothernation")
+        new_doc["motherjob"] = request.POST.get("motherjob")
+        new_doc["address"] = request.POST.get("address")
+        new_doc["student_no"] = request.POST.get("student_no")
+        new_doc["phone_no"] = request.POST.get("phone_no")
+        new_doc["email"] = request.POST.get("email")
+
+        try:
+            collection.insert_one(new_doc)
+            print("Error inerting data:", str(e))
+            return JsonResponse({"message": "Data updated successfully"})
+        except Exception as e:
+            print("Inserted data:", new_doc["_id"])
+            return JsonResponse({"message": "No matching document found"})
+    else:
+        return JsonResponse({"message": "No matching document found "})
+
+
+@csrf_exempt
+def match_burmese_data_sixth_year(request):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]
+    collection = db["fourth_year"]
+    collection2 = db["adm2nd"]
+
+    b = request.POST.get("rollno", None)
+    print("Seatno", b)
+    matched_doc = collection2.find_one({"rollno": b})
+    print(matched_doc)
+    new_doc = {}
+    if matched_doc:
+        photo = request.FILES.get("photo")
+        if photo:
+            photo_data = {
+                "name": photo.name,
+                "my_photo": photo.content_type,
+                "data": base64.b64encode(photo.read()).decode("utf-8"),
+            }
+
+            new_doc["photo"] = photo_data
+        new_doc["myanamme"] = request.POST.get("myanname")
+        new_doc["engname"] = request.POST.get("engname")
+        new_doc["nrc"] = request.POST.get("nrc")
+        new_doc["birthDay"] = request.POST.get("birthDay")
+        new_doc["nation"] = request.POST.get("nation")
+        new_doc["rollno"] = request.POST.get("rollno")
+        new_doc["score"] = request.POST.get("score")
+        new_doc["passedseat_no"] = request.POST.get("passedseat_no")
+        new_doc["currentseat_no"] = request.POST.get("currentseat_no")
+        new_doc["myanfathername"] = request.POST.get("myanfathername")
+        new_doc["engfathername"] = request.POST.get("fatherNameEng")
+        new_doc["fathernrc"] = request.POST.get("fathernrc")
+        new_doc["fathernation"] = request.POST.get("fathernation")
+        new_doc["fatherjob"] = request.POST.get("fatherjob")
+        new_doc["mothername"] = request.POST.get("mothername")
+        new_doc["mothernrc"] = request.POST.get("mothernrc")
+        new_doc["mothernation"] = request.POST.get("mothernation")
+        new_doc["motherjob"] = request.POST.get("motherjob")
+        new_doc["address"] = request.POST.get("address")
+        new_doc["student_no"] = request.POST.get("student_no")
+        new_doc["phone_no"] = request.POST.get("phone_no")
+        new_doc["email"] = request.POST.get("email")
+
+        try:
+            collection.insert_one(new_doc)
+            print("Error inerting data:", str(e))
+            return JsonResponse({"message": "Data updated successfully"})
+        except Exception as e:
+            print("Inserted data:", new_doc["_id"])
+            return JsonResponse({"message": "No matching document found"})
+    else:
+        return JsonResponse({"message": "No matching document found "})
 
 
 # this is for adminsite

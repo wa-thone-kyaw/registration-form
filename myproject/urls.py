@@ -80,5 +80,50 @@ urlpatterns = [
     path("student_registration/register", views.register, name="register"),
     path("student_registration/signup", views.signup, name="signup"),
     path("student_registration/login", views.login, name="login"),
+    path(
+        "student_registration/update_student/<str:student_id>",
+        views.update_student_admin_second_year,
+        name="update_student",
+    ),
+    path(
+        "student_registration/matched_second_year",
+        views.match_burmese_data_second_year,
+        name="matched_second_year",
+    ),
+    path(
+        "student_registration/matched_fourth_year",
+        views.match_burmese_data_fourth_year,
+        name="matched_fourth_year",
+    ),
+    path(
+        "student_registration/matched_fifth_year",
+        views.match_burmese_data_fifth_year,
+        name="matched_fifth_year",
+    ),
+    path(
+        "student_registration/matched_sixth_year",
+        views.match_burmese_data_sixth_year,
+        name="matched_sixth_year",
+    ),
+    path(
+        "student_registration/third_civil_list",
+        views.student_list_third_civil,
+        name="third_civil_list",
+    ),
+    path(
+        "student_registration/fourth_civil_list",
+        views.student_list_fourth_civil,
+        name="fourth_civil_list",
+    ),
+    path(
+        "student_registration/fifth_civil_list",
+        views.student_list_fifth_civil,
+        name="fifth_civil_list",
+    ),
+    path(
+        "student_registration/sixth_civil_list",
+        views.student_list_sixth_civil,
+        name="sixth_civil_list",
+    ),
     path("admin/", admin.site.urls),
 ]

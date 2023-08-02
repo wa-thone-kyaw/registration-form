@@ -2,6 +2,7 @@ from django.db import models
 
 # myapp/models.py
 from django.contrib.auth.models import AbstractUser
+
 class CustomUser(models.Model):
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128)
@@ -13,7 +14,7 @@ class Book(models.Model):
     nrc = models.CharField(max_length=200)
     birthDay = models.DateField()
     nation = models.CharField(max_length=200)
-    seatno = models.CharField(max_length=200)
+    rollno = models.CharField(max_length=200)
     score = models.CharField(max_length=200)
     passedseat_no = models.CharField(max_length=200)
     currentseat_no = models.CharField(max_length=200)
