@@ -217,7 +217,6 @@ def student_list(request):
     )
     db = client["test"]  # Replace <database_name> with your database name
     collection = db["adm2nd"]
-
     students = list(collection.find())
     serialized_students = []
     for student in students:
@@ -233,28 +232,9 @@ def student_list(request):
 def add_student_second_year(request):
     if request.method == "POST":
         data = {
-            "myanname": request.POST.get("myanname"),
             "engname": request.POST.get("engname"),
-            "nrc": request.POST.get("nrc"),
-            "birthDay": request.POST.get("birthDay"),
-            "nation": request.POST.get("nation"),
             "rollno": request.POST.get("rollno"),
-            "score": request.POST.get("score"),
-            "passedseat_no": request.POST.get("passedseat_no"),
-            "currentseat_no": request.POST.get("currentseat_no"),
-            "myanfathername": request.POST.get("myanfathername"),
-            "engfathername": request.POST.get("engfathername"),
-            "fathernrc": request.POST.get("fathernrc"),
-            "fathernation": request.POST.get("fathernation"),
-            "fatherjob": request.POST.get("fatherjob"),
-            "mothername": request.POST.get("mothername"),
-            "mothernrc": request.POST.get("mothernrc"),
-            "mothernation": request.POST.get("mothernation"),
-            "motherjob": request.POST.get("motherjob"),
-            "address": request.POST.get("address"),
             "phone_no": request.POST.get("phone_no"),
-            "student_no": request.POST.get("student_no"),
-            "email": request.POST.get("email"),
         }
         """ photo = request.FILES["photo"] """
         print("Received data:", data)
@@ -265,13 +245,16 @@ def add_student_second_year(request):
 
         db = client["test"]
         collection = db["adm2nd"]
-        """ photo_data = {
-            "name": photo.name,
-            "my_photo": photo.content_type,
-            "data": base64.b64encode(photo.read()).decode("utf-8"),
-        } """
+        counter_collection = db["counter"]
 
-        """ document = {**data, **photo_data} """
+        counter_doc = counter_collection.find_one_and_update(
+            {"_id": "student_id_counter"},
+            {"$inc": {"value": 1}},
+            upsert=True,
+            return_document=True,
+        )
+        next_student_id = counter_doc.get("value", 1)
+        data["_id"] = next_student_id
         result = collection.insert_one(data)
         print("Inserted ID:", result.inserted_id)
         print("inserted document", result)
@@ -1074,19 +1057,62 @@ def add_student_final_year(request):
 
 # delete student data
 @csrf_exempt
-def delete_document(request, doc_id):
-    client = MongoClient(
-        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/online_student_registration_db?retryWrites=true&w=majority"
-    )
+def delete_document(request, student_id):
+    if request.method == "DELETE":
+        try:
+            client = MongoClient(
+                "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/online_student_registration_db?retryWrites=true&w=majority"
+            )
 
-    db = client["online_student_registration_db"]
-    collection = db["second_year"]
-    doc_id = request.POST.get("NRC")
-    # Find and delete the document with the provided ID
-    result = collection.delete_one({"NRC": doc_id})
-    deleted_count = result.deleted_count
+            db = client["test"]
+            collection = db["adm2nd"]
+
+            # Find and delete the document with the provided ID
+            result = collection.delete_one({"_id": student_id})
+            if result.deleted_count > 0:
+                return JsonResponse({"message": "Student deleted successfully"})
+            else:
+                return JsonResponse({"message": "Student not found"}, status=400)
+        except Exception as e:
+            print("Error", e)
+            return JsonResponse(
+                {"message": "An error occurred while deleting the student"}, status=500
+            )
     # Return the number of deleted documents
-    return JsonResponse({"message": f"{deleted_count} document(s) deleted."})
+    return JsonResponse({"message": "Method not allowed"}, status=405)
+
+
+@csrf_exempt
+def update_document(request, student_id):
+    if request.method == "PUT":
+        try:
+            student_id = int(student_id)
+            client = MongoClient(
+                "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/online_student_registration_db?retryWrites=true&w=majority"
+            )
+
+            db = client["test"]
+            collection = db["adm2nd"]
+
+            # Update the document with the provided student_id
+            result = collection.update_one(
+                {"_id": student_id},
+                {"$set": request.POST.dict()},
+            )
+
+            if result.matched_count > 0:
+                return JsonResponse({"message": "Student updated successfully"})
+            else:
+                return JsonResponse({"message": "Student not found"}, status=400)
+        except ValueError:
+            return JsonResponse({"message": "Invalid student ID format"}, status=400)
+        except Exception as e:
+            print("Error", e)
+            return JsonResponse(
+                {"message": "An error occurred while updating the student"},
+                status=500,
+            )
+    return JsonResponse({"message": "Method not allowed"}, status=405)
 
 
 # checkbox

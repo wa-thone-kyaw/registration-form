@@ -48,9 +48,14 @@ urlpatterns = [
         name="matched_sixth_year",
     ),
     path(
-        "student_registration/delete_document/<str:doc_id>/",
+        "student_registration/delete_document/<int:student_id>",
         views.delete_document,
         name="delete_document",
+    ),
+    path(
+        "student_registration/update_document/<int:student_id>",
+        views.update_document,
+        name="update_document",
     ),
     path(
         "student_registration/second_year",
