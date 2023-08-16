@@ -1084,7 +1084,7 @@ def delete_document(request, student_id):
 
 @csrf_exempt
 def update_document(request, student_id):
-    if request.method == "PUT":
+    if request.method == "PATCH":
         try:
             student_id = int(student_id)
             client = MongoClient(
@@ -1094,10 +1094,13 @@ def update_document(request, student_id):
             db = client["test"]
             collection = db["adm2nd"]
 
+            print("Received student_id:", student_id)
+            data = json.loads(request.body.decode("utf-8"))
+
             # Update the document with the provided student_id
             result = collection.update_one(
                 {"_id": student_id},
-                {"$set": request.POST.dict()},
+                {"$set": data},
             )
 
             if result.matched_count > 0:
