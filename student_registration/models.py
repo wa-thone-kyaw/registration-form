@@ -11,6 +11,11 @@ class Students(models.Model):
     engname = models.CharField(max_length=200)
     roll_no = models.CharField(max_length=200)
     phone_no = models.IntegerField(max_length=10)
+
+class Students(models.Model):
+    engname = models.CharField(max_length=200)
+    currentseat_no = models.CharField(max_length=200)
+    phone_no = models.IntegerField(max_length=10)
 class Book(models.Model):
     myanname = models.CharField(max_length=200)
     engname = models.CharField(max_length=200)

@@ -21,16 +21,41 @@ from student_registration import views
 
 urlpatterns = [
     path("student_registration/insert/", views.insert, name="insert"),
-    path("student_registration/student_list/", views.student_list, name="student_list"),
+    path("student_registration/student_list", views.student_list, name="student_list"),
+    path(
+        "student_registration/student_list_old_second_civil",
+        views.student_list_old_second_civil,
+        name="student_list_old_second_civil",
+    ),
+    path(
+        "student_registration/student_list_new_second_civil",
+        views.student_list_new_second_civil,
+        name="student_list_new_second_civil",
+    ),
+    path(
+        "student_registration/add_student_old_second_civil_admin",
+        views.add_student_old_second_civil_admin,
+        name="add_student_old_second_civil_admin",
+    ),
+    path(
+        "student_registration/add_student_new_second_civil_admin",
+        views.add_student_new_second_civil_admin,
+        name="add_student_new_second_civil_admin",
+    ),
     path(
         "student_registration/match_burmese_data",
         views.match_burmese_data,
         name="match_burmese_data",
     ),
     path(
-        "student_registration/matched_second_year_civil",
+        "student_registration/match_burmese_data_second_year",
         views.match_burmese_data_second_year,
-        name="matched_second_year",
+        name="match_burmese_data_second_year",
+    ),
+    path(
+        "student_registration/view_second_civil_new/<int:student_id>",
+        views.view_second_civil_new,
+        name="view_second_civil_new",
     ),
     path(
         "student_registration/matched_fourth_year",
@@ -58,9 +83,29 @@ urlpatterns = [
         name="update_document",
     ),
     path(
-        "student_registration/second_year",
-        views.add_student_second_year,
-        name="second_year",
+        "student_registration/delete_document_old_second_civil/<int:student_id>",
+        views.delete_document_old_second_civil,
+        name="delete_document_old_second_civil",
+    ),
+    path(
+        "student_registration/update_document_old_second_civil/<int:student_id>",
+        views.update_document_old_second_civil,
+        name="update_document_old_second_civil",
+    ),
+    path(
+        "student_registration/delete_document1/<int:student_id>",
+        views.delete_document1,
+        name="delete_document1",
+    ),
+    path(
+        "student_registration/update_document1/<int:student_id>",
+        views.update_document1,
+        name="update_document1",
+    ),
+    path(
+        "student_registration/add_student_old_first_civil",
+        views.add_student_old_first_civil,
+        name="add_student_old_first_civil",
     ),
     path(
         "student_registration/third_year",
