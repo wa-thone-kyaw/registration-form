@@ -12,6 +12,10 @@ class Students(models.Model):
     roll_no = models.CharField(max_length=200)
     phone_no = models.IntegerField(max_length=10)
 
+class First(models.Model):
+    engname = models.CharField(max_length=200)
+    nrc = models.CharField(max_length=200)
+    phone_no=models.IntegerField(max_length=10)
 class Students(models.Model):
     engname = models.CharField(max_length=200)
     currentseat_no = models.CharField(max_length=200)
@@ -22,7 +26,7 @@ class Book(models.Model):
     nrc = models.CharField(max_length=200)
     birthDay = models.DateField()
     nation = models.CharField(max_length=200)
-    rollno = models.CharField(max_length=200)
+    seatno = models.CharField(max_length=200)
     score = models.CharField(max_length=200)
     passedseat_no = models.CharField(max_length=200)
     currentseat_no = models.CharField(max_length=200)
@@ -40,9 +44,11 @@ class Book(models.Model):
     student_no = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
     photo = models.ImageField(upload_to="photos/")
+    fee = models.CharField(max_length=200)
 
     def __str__(self):
         return self.title
+    
     
     class FirstYear(models.Model):
     myanname = models.CharField(max_length=200)
@@ -74,6 +80,7 @@ class Book(models.Model):
     selectedValue4=models.CharField(max_length=50)
     selectedValue5=models.CharField(max_length=50)
     photo = models.ImageField(upload_to="photos/")
+    fee = models.CharField(max_length=200)
 
     def __str__(self):
         return self.title

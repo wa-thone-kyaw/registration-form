@@ -14,6 +14,70 @@ from pymongo.errors import PyMongoError
 
 
 # Create your views here.
+# new first civil delete
+@csrf_exempt
+def delete_document_new_first_civil(request, student_id):
+    if request.method == "DELETE":
+        try:
+            client = MongoClient(
+                "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/online_student_registration_db?retryWrites=true&w=majority"
+            )
+
+            db = client["test"]
+            collection = db["first_year_civil_student"]
+
+            # Find and delete the document with the provided ID
+            result = collection.delete_one({"_id": student_id})
+            if result.deleted_count > 0:
+                return JsonResponse({"message": "Student deleted successfully"})
+            else:
+                return JsonResponse({"message": "Student not found"}, status=400)
+        except Exception as e:
+            print("Error", e)
+            return JsonResponse(
+                {"message": "An error occurred while deleting the student"}, status=500
+            )
+    # Return the number of deleted documents
+    return JsonResponse({"message": "Method not allowed"}, status=405)
+
+
+# update new first civil
+@csrf_exempt
+def update_document_new_first_civil(request, student_id):
+    if request.method == "PATCH":
+        try:
+            student_id = int(student_id)
+            client = MongoClient(
+                "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/online_student_registration_db?retryWrites=true&w=majority"
+            )
+
+            db = client["test"]
+            collection = db["first_year_civil_student"]
+
+            print("Received student_id:", student_id)
+            data = json.loads(request.body.decode("utf-8"))
+
+            # Update the document with the provided student_id
+            result = collection.update_one(
+                {"_id": student_id},
+                {"$set": data},
+            )
+
+            if result.matched_count > 0:
+                return JsonResponse({"message": "Student updated successfully"})
+            else:
+                return JsonResponse({"message": "Student not found"}, status=400)
+        except ValueError:
+            return JsonResponse({"message": "Invalid student ID format"}, status=400)
+        except Exception as e:
+            print("Error", e)
+            return JsonResponse(
+                {"message": "An error occurred while updating the student"},
+                status=500,
+            )
+    return JsonResponse({"message": "Method not allowed"}, status=405)
+
+
 # delete old first civil
 @csrf_exempt
 def delete_document1(request, student_id):
@@ -96,57 +160,6 @@ def student_list(request):
 
 
 # civil admin add
-@csrf_exempt
-def add_student_first_civil_admin(request):
-    if request.method == "POST":
-        data = {
-            "myanname": request.POST.get("myanname"),
-            "engname": request.POST.get("engname"),
-            "nrc": request.POST.get("nrc"),
-            "birthDay": request.POST.get("birthDay"),
-            "nation": request.POST.get("nation"),
-            "rollno": request.POST.get("rollno"),
-            "score": request.POST.get("score"),
-            "passedseat_no": request.POST.get("passedseat_no"),
-            "currentseat_no": request.POST.get("currentseat_no"),
-            "myanfathername": request.POST.get("myanfathername"),
-            "engfathername": request.POST.get("engfathername"),
-            "fathernrc": request.POST.get("fathernrc"),
-            "fathernation": request.POST.get("fathernation"),
-            "fatherjob": request.POST.get("fatherjob"),
-            "mothername": request.POST.get("mothername"),
-            "mothernrc": request.POST.get("mothernrc"),
-            "mothernation": request.POST.get("mothernation"),
-            "motherjob": request.POST.get("motherjob"),
-            "address": request.POST.get("address"),
-            "phone_no": request.POST.get("phone_no"),
-            "student_no": request.POST.get("student_no"),
-            "email": request.POST.get("email"),
-        }
-        """ photo = request.FILES["photo"] """
-        print("Received data:", data)
-        client = MongoClient(
-            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority",
-            connectTimeoutMS=30000,
-        )
-
-        db = client["test"]
-        collection = db["first_civil"]
-        """ photo_data = {
-            "name": photo.name,
-            "my_photo": photo.content_type,
-            "data": base64.b64encode(photo.read()).decode("utf-8"),
-        } """
-
-        """ document = {**data, **photo_data} """
-        result = collection.insert_one(data)
-        print("Inserted ID:", result.inserted_id)
-        print("inserted document", result)
-
-        # Return the inserted document I
-        return JsonResponse({"id": str(result.inserted_id)})
-
-    return JsonResponse({"message": "Method not allowed"}, status=405)
 
 
 # adding student data for first year
@@ -179,6 +192,7 @@ def add_student_first_year(request):
             "selectedValue3": request.POST.get("selectedValue3"),
             "selectedValue4": request.POST.get("selectedValue4"),
             "selectedValue5": request.POST.get("selectedValue5"),
+            "fee": request.POST.get("fee"),
         }
         photo = request.FILES["photo"]
         print("Received data:", data)
@@ -194,7 +208,17 @@ def add_student_first_year(request):
             "my_photo": photo.content_type,
             "data": base64.b64encode(photo.read()).decode("utf-8"),
         }
-
+        counter_collection = db[
+            "new_first_civil_counter"
+        ]  # Use a different counter collection
+        counter_doc = counter_collection.find_one_and_update(
+            {"_id": "first_year_counter"},
+            {"$inc": {"value": 1}},
+            upsert=True,
+            return_document=True,
+        )
+        next_doc_id = counter_doc.get("value", 1)
+        data["_id"] = next_doc_id
         document = {**data, **photo_data}
 
         result = collection.insert_one(document)
@@ -209,12 +233,12 @@ def add_student_first_year(request):
 
 # civil
 @csrf_exempt
-def student_list_first_civil(request):
+def student_list_new_first_civil(request):
     client = MongoClient(
         "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
     )
     db = client["test"]  # Replace <database_name> with your database name
-    collection = db["first_civil"]
+    collection = db["first_year_civil_student"]
 
     students = list(collection.find())
     serialized_students = []
@@ -224,6 +248,81 @@ def student_list_first_civil(request):
     return JsonResponse(
         {"students": serialized_students}, json_dumps_params={"default": str}
     )
+
+
+# for new second civil
+@csrf_exempt
+def student_list_first_civil(request):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]  # Replace <database_name> with your database name
+    collection = db["old_first_civil"]
+
+    students = list(collection.find())
+    serialized_students = []
+    for student in students:
+        student["_id"] = str(student["_id"])
+        serialized_students.append(student)
+    return JsonResponse(
+        {"students": serialized_students}, json_dumps_params={"default": str}
+    )
+
+
+@csrf_exempt
+def view_first_civil_new(request, student_id):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]  # Replace <database_name> with your database name
+    collection = db["first_year_civil_student"]
+
+    try:
+        student = collection.find_one({"_id": int(student_id)})
+        print("student", student)
+        if student:
+            return JsonResponse(student, json_dumps_params={"default": str})
+        else:
+            return JsonResponse({"error": "Student not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+@csrf_exempt
+def add_student_new_first_civil_admin(request):
+    if request.method == "POST":
+        data = {
+            "engname": request.POST.get("engname"),
+            "nrc": request.POST.get("nrc"),
+            "phone_no": request.POST.get("phone_no"),
+        }
+        """ photo = request.FILES["photo"] """
+        print("Received data:", data)
+        client = MongoClient(
+            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority",
+            connectTimeoutMS=30000,
+        )
+
+        db = client["test"]
+        collection = db["first_year_civil_student"]
+        counter_collection = db["new_first_civil_counter"]
+
+        counter_doc = counter_collection.find_one_and_update(
+            {"_id": "student_id_counter"},
+            {"$inc": {"value": 1}},
+            upsert=True,
+            return_document=True,
+        )
+        next_student_id = counter_doc.get("value", 1)
+        data["_id"] = next_student_id
+        result = collection.insert_one(data)
+        print("Inserted ID:", result.inserted_id)
+        print("inserted document", result)
+
+        # Return the inserted document I
+        return JsonResponse({"id": str(result.inserted_id)})
+
+    return JsonResponse({"message": "Method not allowed"}, status=405)
 
 
 # civil admin add old first civil
@@ -312,6 +411,7 @@ def match_burmese_data_second_year(request):
         new_doc["student_no"] = request.POST.get("student_no")
         new_doc["phone_no"] = request.POST.get("phone_no")
         new_doc["email"] = request.POST.get("email")
+        new_doc["fee"] = request.POST.get("fee")
 
         counter_collection = db[
             "new_second_civil_counter"
