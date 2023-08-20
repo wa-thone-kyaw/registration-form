@@ -12,6 +12,37 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from io import BytesIO
 from pymongo.errors import PyMongoError
 
+# appname/views.py
+
+from django.core.mail import EmailMessage
+from django.http import JsonResponse
+
+
+@csrf_exempt
+def send_confirmation_email(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        recipient_email = data.get("recipient_email")
+
+        if not recipient_email:
+            return JsonResponse({"message": "Recipient email is missing."}, status=400)
+        # You can add more email-related logic here
+
+        try:
+            # Send the email
+            subject = "Payment Information"
+            message = "Your registration was successfully!"
+            from_email = "myatmon@tumeiktila.edu.mm"
+            recipient_list = [recipient_email]
+
+            email = EmailMessage(subject, message, from_email, recipient_list)
+            email.send()
+            return JsonResponse({"message": "Email sent successfully"})
+        except Exception as e:
+            return JsonResponse(
+                {"message": f"Email sending failed: {str(e)}"}, status=500
+            )
+
 
 # Create your views here.
 # new first civil delete
@@ -160,6 +191,79 @@ def student_list(request):
 
 
 # civil admin add
+@csrf_exempt
+def match_burmese_data_first_year(request):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]
+    collection = db["first_year_civil_student"]
+    collection2 = db["exam_result"]
+
+    b = request.POST.get("nrc", None)
+    print("Seatno", b)
+    matched_doc = collection2.find_one({"NRC": b})
+    print("matched", matched_doc)
+    new_doc = {}
+    if matched_doc:
+        photo = request.FILES.get("photo")
+        if photo:
+            photo_data = {
+                "name": photo.name,
+                "my_photo": photo.content_type,
+                "data": base64.b64encode(photo.read()).decode("utf-8"),
+            }
+
+            new_doc["photo"] = photo_data
+        new_doc["myanname"] = request.POST.get("myanname")
+        new_doc["engname"] = request.POST.get("engname")
+        new_doc["nrc"] = request.POST.get("nrc")
+        new_doc["birthDay"] = request.POST.get("birthDay")
+        new_doc["nation"] = request.POST.get("nation")
+        new_doc["seatno"] = request.POST.get("seatno")
+        new_doc["department"] = request.POST.get("department")
+        new_doc["score"] = request.POST.get("score")
+        new_doc["myanfathername"] = request.POST.get("myanfathername")
+        new_doc["engfathername"] = request.POST.get("engfathername")
+        new_doc["fathernrc"] = request.POST.get("fathernrc")
+        new_doc["fathernation"] = request.POST.get("fathernation")
+        new_doc["fatherjob"] = request.POST.get("fatherjob")
+        new_doc["mothername"] = request.POST.get("mothername")
+        new_doc["mothernrc"] = request.POST.get("mothernrc")
+        new_doc["mothernation"] = request.POST.get("mothernation")
+        new_doc["motherjob"] = request.POST.get("motherjob")
+        new_doc["address"] = request.POST.get("address")
+        new_doc["phone_no"] = request.POST.get("phone_no")
+        new_doc["email"] = request.POST.get("email")
+        new_doc["selectedValue"] = request.POST.get("selectedValue")
+        new_doc["selectedValue2"] = request.POST.get("selectedValue2")
+        new_doc["selectedValue3"] = request.POST.get("selectedValue3")
+        new_doc["selectedValue4"] = request.POST.get("selectedValue4")
+        new_doc["selectedValue5"] = request.POST.get("selectedValue5")
+        new_doc["fee"] = request.POST.get("fee")
+
+        counter_collection = db[
+            "new_first_civil_counter"
+        ]  # Use a different counter collection
+        counter_doc = counter_collection.find_one_and_update(
+            {"_id": "first_year_counter"},
+            {"$inc": {"value": 1}},
+            upsert=True,
+            return_document=True,
+        )
+        next_doc_id = counter_doc.get("value", 1)
+        new_doc["_id"] = next_doc_id
+        print("Data", new_doc)
+        try:
+            collection.insert_one(new_doc)
+            print("Error inerting data:", str(e))
+
+            return JsonResponse({"message": "Data updated successfully"})
+        except Exception as e:
+            print("Inserted data:", new_doc["_id"])
+            return JsonResponse({"message": "No matching document found"})
+    else:
+        return JsonResponse({"message": "No matching document found "})
 
 
 # adding student data for first year
@@ -223,7 +327,7 @@ def add_student_first_year(request):
 
         result = collection.insert_one(document)
 
-        print("Inserted ID:", result.inserted_id)
+        print("Inserted ID:", result)
 
         # Return the inserted document ID
         return JsonResponse({"id": str(result.inserted_id)})
@@ -289,7 +393,7 @@ def view_first_civil_new(request, student_id):
 
 
 @csrf_exempt
-def add_student_new_first_civil_admin(request):
+def add_student_new_first_civil1_admin(request):
     if request.method == "POST":
         data = {
             "engname": request.POST.get("engname"),
@@ -306,6 +410,43 @@ def add_student_new_first_civil_admin(request):
         db = client["test"]
         collection = db["first_year_civil_student"]
         counter_collection = db["new_first_civil_counter"]
+
+        counter_doc = counter_collection.find_one_and_update(
+            {"_id": "first_year_counter"},
+            {"$inc": {"value": 1}},
+            upsert=True,
+            return_document=True,
+        )
+        next_student_id = counter_doc.get("value", 1)
+        data["_id"] = next_student_id
+        result = collection.insert_one(data)
+        print("Inserted ID:", result.inserted_id)
+        print("inserted document", result)
+
+        # Return the inserted document I
+        return JsonResponse({"id": str(result.inserted_id)})
+
+    return JsonResponse({"message": "Method not allowed"}, status=405)
+
+
+@csrf_exempt
+def add_student_new_first_civil_admin(request):
+    if request.method == "POST":
+        data = {
+            "engname": request.POST.get("engname"),
+            "NRC": request.POST.get("NRC"),
+            "phone_no": request.POST.get("phone_no"),
+        }
+        """ photo = request.FILES["photo"] """
+        print("Received data:", data)
+        client = MongoClient(
+            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority",
+            connectTimeoutMS=30000,
+        )
+
+        db = client["test"]
+        collection = db["exam_result"]
+        counter_collection = db["exam_result_counter"]
 
         counter_doc = counter_collection.find_one_and_update(
             {"_id": "student_id_counter"},
@@ -426,7 +567,8 @@ def match_burmese_data_second_year(request):
         new_doc["_id"] = next_doc_id
 
         try:
-            collection.insert_one(new_doc)
+            result = collection.insert_one(new_doc)
+            print("Result", result)
             print("Error inerting data:", str(e))
             return JsonResponse({"message": "Data updated successfully"})
         except Exception as e:

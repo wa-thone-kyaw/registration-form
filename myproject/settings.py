@@ -100,6 +100,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "myproject.wsgi.application"
+# settings.py
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.office365.com"  # Outlook SMTP server
+EMAIL_PORT = 587  # Outlook SMTP port (587 for TLS)
+EMAIL_USE_TLS = True  # Use TLS (True for TLS, False for SSL)
+EMAIL_HOST_USER = "myatmon@tumeiktila.edu.mm"  # Your Outlook email
+EMAIL_HOST_PASSWORD = "DreamLover711999"  # Your Outlook password or app password
+# Your Outlook password or app password
+
+# Your Gmail password or an App Password
 
 
 # Database

@@ -20,6 +20,11 @@ from django.urls import path
 from student_registration import views
 
 urlpatterns = [
+    path(
+        "student_registration/send_confirmation_email",
+        views.send_confirmation_email,
+        name="send_confirmation_email",
+    ),
     path("student_registration/insert/", views.insert, name="insert"),
     path("student_registration/student_list", views.student_list, name="student_list"),
     path(
@@ -56,6 +61,11 @@ urlpatterns = [
         "student_registration/match_burmese_data",
         views.match_burmese_data,
         name="match_burmese_data",
+    ),
+    path(
+        "student_registration/match_burmese_data_first_year",
+        views.match_burmese_data_first_year,
+        name="match_burmese_data_first_year",
     ),
     path(
         "student_registration/match_burmese_data_second_year",
@@ -151,6 +161,11 @@ urlpatterns = [
         "student_registration/add_student_new_first_civil_admin",
         views.add_student_new_first_civil_admin,
         name="add_student_new_first_civil_admin",
+    ),
+    path(
+        "student_registration/add_student_new_first_civil1_admin",
+        views.add_student_new_first_civil1_admin,
+        name="add_student_new_first_civil1_admin",
     ),
     path(
         "student_registration/first_year",
