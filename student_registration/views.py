@@ -17,6 +17,25 @@ from pymongo.errors import PyMongoError
 from django.core.mail import EmailMessage
 from django.http import JsonResponse
 
+from django.core.mail import send_mail
+
+
+@csrf_exempt
+def send_outlook_email(request):
+    if request.method == "POST":
+        recipient_email = request.POST.get("recipient_email")
+        name = request.POST.get("name")
+        message = request.POST.get("message")
+        sender_email = request.POST.get("senderEmail")  # Get sender's email
+
+        try:
+            send_mail(name, message, sender_email, [recipient_email])
+            return JsonResponse({"success": True, "message": "Email sent successfully"})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)})
+
+    return JsonResponse({"success": False, "message": "Invalid request method"})
+
 
 @csrf_exempt
 def send_confirmation_email(request):
@@ -84,6 +103,69 @@ def update_document_new_first_civil(request, student_id):
 
             db = client["test"]
             collection = db["first_year_civil_student"]
+
+            print("Received student_id:", student_id)
+            data = json.loads(request.body.decode("utf-8"))
+
+            # Update the document with the provided student_id
+            result = collection.update_one(
+                {"_id": student_id},
+                {"$set": data},
+            )
+
+            if result.matched_count > 0:
+                return JsonResponse({"message": "Student updated successfully"})
+            else:
+                return JsonResponse({"message": "Student not found"}, status=400)
+        except ValueError:
+            return JsonResponse({"message": "Invalid student ID format"}, status=400)
+        except Exception as e:
+            print("Error", e)
+            return JsonResponse(
+                {"message": "An error occurred while updating the student"},
+                status=500,
+            )
+    return JsonResponse({"message": "Method not allowed"}, status=405)
+
+
+@csrf_exempt
+def delete_document_exam_result(request, student_id):
+    if request.method == "DELETE":
+        try:
+            client = MongoClient(
+                "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/online_student_registration_db?retryWrites=true&w=majority"
+            )
+
+            db = client["test"]
+            collection = db["exam_result"]
+
+            # Find and delete the document with the provided ID
+            result = collection.delete_one({"_id": student_id})
+            if result.deleted_count > 0:
+                return JsonResponse({"message": "Student deleted successfully"})
+            else:
+                return JsonResponse({"message": "Student not found"}, status=400)
+        except Exception as e:
+            print("Error", e)
+            return JsonResponse(
+                {"message": "An error occurred while deleting the student"}, status=500
+            )
+    # Return the number of deleted documents
+    return JsonResponse({"message": "Method not allowed"}, status=405)
+
+
+# update new first civil
+@csrf_exempt
+def update_document_exam_result(request, student_id):
+    if request.method == "PATCH":
+        try:
+            student_id = int(student_id)
+            client = MongoClient(
+                "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/online_student_registration_db?retryWrites=true&w=majority"
+            )
+
+            db = client["test"]
+            collection = db["exam_result"]
 
             print("Received student_id:", student_id)
             data = json.loads(request.body.decode("utf-8"))
@@ -335,33 +417,50 @@ def add_student_first_year(request):
     return JsonResponse({"message": "Method not allowed"}, status=405)
 
 
-# civil
 @csrf_exempt
-def student_list_new_first_civil(request):
+def add_student_new_first_civil_admin(request):
+    if request.method == "POST":
+        data = {
+            "engname1": request.POST.get("engname1"),
+            "NRC": request.POST.get("NRC"),
+            "phone_no1": request.POST.get("phone_no1"),
+        }
+        """ photo = request.FILES["photo"] """
+        print("Received data:", data)
+        client = MongoClient(
+            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority",
+            connectTimeoutMS=30000,
+        )
+
+        db = client["test"]
+        collection = db["exam_result"]
+        counter_collection = db["exam_result_counter"]
+
+        counter_doc = counter_collection.find_one_and_update(
+            {"_id": "student_id_counter"},
+            {"$inc": {"value": 1}},
+            upsert=True,
+            return_document=True,
+        )
+        next_student_id = counter_doc.get("value", 1)
+        data["_id"] = next_student_id
+        result = collection.insert_one(data)
+        print("Inserted ID:", result.inserted_id)
+        print("inserted document", result)
+
+        # Return the inserted document I
+        return JsonResponse({"id": str(result.inserted_id)})
+
+    return JsonResponse({"message": "Method not allowed"}, status=405)
+
+
+@csrf_exempt
+def exampassed_list(request):
     client = MongoClient(
         "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
     )
     db = client["test"]  # Replace <database_name> with your database name
-    collection = db["first_year_civil_student"]
-
-    students = list(collection.find())
-    serialized_students = []
-    for student in students:
-        student["_id"] = str(student["_id"])
-        serialized_students.append(student)
-    return JsonResponse(
-        {"students": serialized_students}, json_dumps_params={"default": str}
-    )
-
-
-# for new second civil
-@csrf_exempt
-def student_list_first_civil(request):
-    client = MongoClient(
-        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
-    )
-    db = client["test"]  # Replace <database_name> with your database name
-    collection = db["old_first_civil"]
+    collection = db["exam_result"]
 
     students = list(collection.find())
     serialized_students = []
@@ -429,41 +528,42 @@ def add_student_new_first_civil1_admin(request):
     return JsonResponse({"message": "Method not allowed"}, status=405)
 
 
+# civil
 @csrf_exempt
-def add_student_new_first_civil_admin(request):
-    if request.method == "POST":
-        data = {
-            "engname": request.POST.get("engname"),
-            "NRC": request.POST.get("NRC"),
-            "phone_no": request.POST.get("phone_no"),
-        }
-        """ photo = request.FILES["photo"] """
-        print("Received data:", data)
-        client = MongoClient(
-            "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority",
-            connectTimeoutMS=30000,
-        )
+def student_list_new_first_civil(request):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]  # Replace <database_name> with your database name
+    collection = db["first_year_civil_student"]
 
-        db = client["test"]
-        collection = db["exam_result"]
-        counter_collection = db["exam_result_counter"]
+    students = list(collection.find())
+    serialized_students = []
+    for student in students:
+        student["_id"] = str(student["_id"])
+        serialized_students.append(student)
+    return JsonResponse(
+        {"students": serialized_students}, json_dumps_params={"default": str}
+    )
 
-        counter_doc = counter_collection.find_one_and_update(
-            {"_id": "student_id_counter"},
-            {"$inc": {"value": 1}},
-            upsert=True,
-            return_document=True,
-        )
-        next_student_id = counter_doc.get("value", 1)
-        data["_id"] = next_student_id
-        result = collection.insert_one(data)
-        print("Inserted ID:", result.inserted_id)
-        print("inserted document", result)
 
-        # Return the inserted document I
-        return JsonResponse({"id": str(result.inserted_id)})
+# for new second civil
+@csrf_exempt
+def student_list_first_civil(request):
+    client = MongoClient(
+        "mongodb+srv://myatmonthantorg:myatmonthant123@cluster0.hagfqf4.mongodb.net/test?retryWrites=true&w=majority"
+    )
+    db = client["test"]  # Replace <database_name> with your database name
+    collection = db["old_first_civil"]
 
-    return JsonResponse({"message": "Method not allowed"}, status=405)
+    students = list(collection.find())
+    serialized_students = []
+    for student in students:
+        student["_id"] = str(student["_id"])
+        serialized_students.append(student)
+    return JsonResponse(
+        {"students": serialized_students}, json_dumps_params={"default": str}
+    )
 
 
 # civil admin add old first civil

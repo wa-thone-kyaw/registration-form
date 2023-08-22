@@ -25,12 +25,22 @@ urlpatterns = [
         views.send_confirmation_email,
         name="send_confirmation_email",
     ),
+    path(
+        "student_registration/send_outlook_email",
+        views.send_outlook_email,
+        name="send_outlook_email",
+    ),
     path("student_registration/insert/", views.insert, name="insert"),
     path("student_registration/student_list", views.student_list, name="student_list"),
     path(
         "student_registration/student_list_new_first_civil",
         views.student_list_new_first_civil,
         name="student_list_new_first_civil",
+    ),
+    path(
+        "student_registration/exampassed_list",
+        views.exampassed_list,
+        name="exampassed_list",
     ),
     path(
         "student_registration/view_first_civil_new/<int:student_id>",
@@ -101,6 +111,16 @@ urlpatterns = [
         "student_registration/update_document/<int:student_id>",
         views.update_document,
         name="update_document",
+    ),
+    path(
+        "student_registration/delete_document_exam_result/<int:student_id>",
+        views.delete_document_exam_result,
+        name="delete_document",
+    ),
+    path(
+        "student_registration/update_document_exam_result/<int:student_id>",
+        views.update_document_exam_result,
+        name="update_document_exam_result",
     ),
     path(
         "student_registration/delete_document_old_second_civil/<int:student_id>",
