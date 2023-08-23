@@ -18,7 +18,7 @@ class Students(models.Model):
 
 class First(models.Model):
     engname1 = models.CharField(max_length=200)
-    NRC = models.CharField(max_length=200)
+    nrc1 = models.CharField(max_length=200)
     phone_no1 = models.IntegerField(max_length=10)
 
 
