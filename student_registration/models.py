@@ -56,7 +56,7 @@ class Book(models.Model):
     address = models.CharField(max_length=200)
     phone_no = models.CharField(max_length=200)
     student_no = models.CharField(max_length=200)
-    email = models.CharField(max_length=200)
+    email = models.EmailField(unique=True)
     photo = models.ImageField(upload_to="photos/")
     fee = models.CharField(max_length=200)
 
@@ -84,7 +84,7 @@ class Firstyear(models.Model):
     motherjob = models.CharField(max_length=200)
     address = models.CharField(max_length=200)
     phone_no = models.CharField(max_length=200)
-    email = models.CharField(max_length=200)
+    email = models.EmailField(unique=True)
 
     selectedValue = models.CharField(max_length=50)
     selectedValue2 = models.CharField(max_length=50)
